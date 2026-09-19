@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The AI Builder's Handbook — Volume 1</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-mark">AI</span>
+          <span class="logo-text">Builder's Handbook</span>
+        </div>
+        <p class="tagline">Understand production code by seeing memory</p>
+      </div>
+      <nav class="nav">
+        <div class="nav-section">
+          <div class="nav-section-title">How this book works</div>
+          <a href="#intro" class="nav-link active" data-section="intro">Introduction</a>
+          <a href="#three-questions" class="nav-link" data-section="three-questions">The three questions</a>
+          <a href="#roadmap" class="nav-link" data-section="roadmap">Full roadmap</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Volume 1 · Core mechanics</div>
+          <a href="#ch1" class="nav-link" data-section="ch1">1. Memory, names, stack &amp; heap</a>
+          <a href="#ch1-objects" class="nav-link sub" data-section="ch1-objects">1.2 Objects</a>
+          <a href="#ch1-names" class="nav-link sub" data-section="ch1-names">1.3 Names are labels</a>
+          <a href="#ch1-heap" class="nav-link sub" data-section="ch1-heap">1.4 The heap</a>
+          <a href="#ch1-stack" class="nav-link sub" data-section="ch1-stack">1.5 The call stack</a>
+          <a href="#ch1-trace" class="nav-link sub" data-section="ch1-trace">1.6 Watch it happen</a>
+          <a href="#ch1-sharing" class="nav-link sub" data-section="ch1-sharing">1.7 Sharing &amp; mutation</a>
+          <a href="#ch1-real" class="nav-link sub" data-section="ch1-real">1.8 Reading real code</a>
+          <a href="#ch1-check" class="nav-link sub" data-section="ch1-check">1.10 Self-check</a>
+          <a href="#ch2" class="nav-link" data-section="ch2">2. Pass-by-assignment</a>
+          <a href="#ch2-pass" class="nav-link sub" data-section="ch2-pass">2.1 How arguments are handed</a>
+          <a href="#ch2-mutable" class="nav-link sub" data-section="ch2-mutable">2.2 Mutable vs immutable</a>
+          <a href="#ch2-trace" class="nav-link sub" data-section="ch2-trace">2.3 Five interactive scenarios</a>
+          <a href="#ch2-plus" class="nav-link sub" data-section="ch2-plus">2.4 Two kinds of +=</a>
+          <a href="#ch2-copy" class="nav-link sub" data-section="ch2-copy">2.6 Copying</a>
+          <a href="#ch2-default" class="nav-link sub" data-section="ch2-default">2.7 Default-argument trap</a>
+          <a href="#ch2-real" class="nav-link sub" data-section="ch2-real">2.9 Reading real code</a>
+          <a href="#ch2-check" class="nav-link sub" data-section="ch2-check">2.13 Self-check</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Coming next</div>
+          <span class="nav-link disabled">3. Scopes (LEGB)</span>
+          <span class="nav-link disabled">4. Closures &amp; generators</span>
+          <span class="nav-link disabled">… AI builder stack</span>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <p>No memorization. Only mental models that survive production code.</p>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="topbar-right">
+          <span class="volume-badge">Volume 1</span>
+        </div>
+      </header>
+
+      <article class="content">
+        <!-- INTRO -->
+        <section id="intro" class="section">
+          <div class="hero">
+            <h1>The AI Builder's Handbook</h1>
+            <p class="lead">A reference for people who want to understand Python and the whole AI builder stack, and read production code with confidence — without memorizing syntax.</p>
+          </div>
+
+          <div class="callout callout-key">
+            <div class="callout-title">How this book works</div>
+            <p>You do not need any programming background. Every chapter starts from a picture you can hold in your head, then shows how Python actually behaves, then applies the picture to real code.</p>
+            <p>The book makes one bet: <strong>people who read code fluently are not people who remember syntax. They are people who can see what the code does to memory as it runs.</strong> Syntax can be looked up in seconds. A wrong mental model cannot be looked up; it just produces bugs you cannot explain.</p>
+          </div>
+
+          <h2>Each chapter follows the same path</h2>
+          <ol class="path-list">
+            <li><strong>Mental model.</strong> A plain-language picture.</li>
+            <li><strong>Mechanics.</strong> What Python really does, step by step.</li>
+            <li><strong>Trace.</strong> A small program followed line by line — interactively.</li>
+            <li><strong>Reading real code.</strong> The same idea applied to code like you will meet at work.</li>
+            <li><strong>Misconceptions and self-check.</strong> The traps, and questions to test yourself.</li>
+          </ol>
+        </section>
+
+        <!-- THREE QUESTIONS -->
+        <section id="three-questions" class="section">
+          <h2>The three questions</h2>
+          <p>When you meet any piece of code in this book or outside it, ask these three questions. They are the spine of Volume 1:</p>
+          <div class="questions">
+            <div class="question-card">
+              <span class="q-num">1</span>
+              <p>What objects get created here, and where do they live?</p>
+            </div>
+            <div class="question-card">
+              <span class="q-num">2</span>
+              <p>Which names (or containers) point at each object?</p>
+            </div>
+            <div class="question-card">
+              <span class="q-num">3</span>
+              <p>When does each object stop being needed?</p>
+            </div>
+          </div>
+        </section>
+
+
+        <section id="roadmap" class="section">
+          <h2>Full roadmap — what you still need</h2>
+          <p>Here is everything a non-technical person needs to go from zero to reading production AI code. Chapters 1–2 are the foundation you are building now.</p>
+          <div class="roadmap">
+            <div class="roadmap-item done">
+              <span class="rm-badge">Done</span>
+              <div class="rm-body">
+                <strong>Vol 1 · Ch 1–2</strong>
+                <p>Memory, names, stack/heap, pass-by-assignment, mutable vs immutable</p>
+              </div>
+            </div>
+            <div class="roadmap-item current">
+              <span class="rm-badge">Next</span>
+              <div class="rm-body">
+                <strong>Vol 1 · Ch 3–6</strong>
+                <p>Scopes (LEGB), closures, generators, iterators, context managers, exceptions, modules</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <span class="rm-badge">Later</span>
+              <div class="rm-body">
+                <strong>Vol 2 · Data &amp; control</strong>
+                <p>Lists/dicts/sets in depth, comprehensions, *args/**kwargs, functions as values</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <span class="rm-badge">Later</span>
+              <div class="rm-body">
+                <strong>Vol 3 · Objects &amp; classes</strong>
+                <p>Classes, attributes, inheritance, dunder methods, dataclasses — the shape of HF models &amp; agents</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <span class="rm-badge">Later</span>
+              <div class="rm-body">
+                <strong>Vol 4 · Production Python</strong>
+                <p>Type hints, async/await, concurrency, logging, testing, packaging</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <span class="rm-badge">Later</span>
+              <div class="rm-body">
+                <strong>Vol 5–6 · AI builder stack</strong>
+                <p>NumPy/tensors as objects, agent state, FastAPI lifecycle, caching, streaming, batching</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CHAPTER 1 -->
+        <section id="ch1" class="section chapter">
+          <div class="chapter-header">
+            <span class="chapter-num">Chapter 1</span>
+            <h1>Memory, names, the stack and the heap</h1>
+            <p class="chapter-vol">Volume 1 · Python memory and core mechanics</p>
+          </div>
+
+          <h2 id="ch1-what">1.1 What a program is</h2>
+          <p>A program is a list of instructions the computer follows one at a time, plus the data those instructions work on. The computer keeps that data in memory (also called RAM).</p>
+          <div class="visual-card">
+            <div class="visual-title">Picture memory as a warehouse</div>
+            <div class="warehouse">
+              <div class="shelf"><span class="addr">0x…A1</span><span class="obj int">250</span></div>
+              <div class="shelf"><span class="addr">0x…B2</span><span class="obj list">[90, 85]</span></div>
+              <div class="shelf"><span class="addr">0x…C3</span><span class="obj str">"report"</span></div>
+              <div class="shelf empty"><span class="addr">0x…D4</span><span class="obj empty">empty</span></div>
+            </div>
+            <p class="visual-caption">Each shelf has a number (its address). Something you want to keep goes on a shelf; to use it later you need to know which shelf. When the program ends, the warehouse is cleared.</p>
+          </div>
+          <p>Everything Python does comes down to four moves:</p>
+          <ul class="moves">
+            <li>put a piece of data into memory,</li>
+            <li>remember where you put it,</li>
+            <li>look at it or change it,</li>
+            <li>throw it away when nobody needs it.</li>
+          </ul>
+          <p>This chapter is about those four moves. Get them right and most later topics (mutability, closures, generators, async, agent state) become variations on a theme you already understand.</p>
+        </section>
+
+        <section id="ch1-objects" class="section">
+          <h2>1.2 Objects: everything is a thing in memory</h2>
+          <p>In Python, every piece of data is an object. A number is an object. A piece of text is an object. A list is an object. Even a function is an object. Each object has three properties:</p>
+          <div class="props">
+            <div class="prop">
+              <strong>Identity</strong>
+              <p>Which shelf it sits on. It never changes for the life of the object.</p>
+            </div>
+            <div class="prop">
+              <strong>Type</strong>
+              <p>What kind of thing it is (number, text, list…).</p>
+            </div>
+            <div class="prop">
+              <strong>Value</strong>
+              <p>What it currently contains.</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <pre><code>price = 250
+print(type(price))   # &lt;class 'int'&gt;  → the type
+print(id(price))     # a big number      → the identity (memory address)
+print(price)         # 250               → the value</code></pre>
+          </div>
+          <p class="note">You will almost never call <code>id()</code> in real work. It is a flashlight for learning: it lets you check whether two names point at the same object.</p>
+        </section>
+
+        <section id="ch1-names" class="section">
+          <h2>1.3 Names are labels, not boxes</h2>
+          <p>Most people picture a variable as a box with a value inside. In Python that picture is wrong, and the wrong picture causes real bugs. The right picture:</p>
+          <div class="callout callout-model">
+            <div class="callout-title">Mental model</div>
+            <p>A variable is a <strong>name tag (a label)</strong>. The object sits on a shelf. The name tag points to the shelf. Assigning with <code>=</code> means “stick this label on that object”. It never copies the object.</p>
+          </div>
+          <p>So <code>price = 250</code> does two things: it creates the object 250, then attaches the label <code>price</code> to it. Now watch what a second label does:</p>
+          <div class="code-block">
+            <pre><code>a = [1, 2, 3]     # create a list object, stick label a on it
+b = a             # stick a second label b on the SAME object. No copy.
+c = [1, 2, 3]     # create a NEW list object with equal contents, label c
+
+print(a == b)     # True   same value
+print(a is b)     # True   same object
+print(a == c)     # True   same value
+print(a is c)     # False  different objects that happen to look alike</code></pre>
+          </div>
+          <div class="diagram-labels">
+            <div class="label-box">
+              <span class="label">a</span>
+              <span class="arrow">→</span>
+              <span class="object list">[1, 2, 3]</span>
+              <span class="arrow">←</span>
+              <span class="label">b</span>
+            </div>
+            <div class="label-box">
+              <span class="label">c</span>
+              <span class="arrow">→</span>
+              <span class="object list">[1, 2, 3]</span>
+              <span class="note-inline">(different object)</span>
+            </div>
+          </div>
+          <p>Two comparison tools, two different questions. <code>==</code> asks “do these have the same value?” <code>is</code> asks “are these literally the same object?” Twins are <code>==</code>. One person with two nicknames is <code>is</code>.</p>
+        </section>
+
+        <section id="ch1-heap" class="section">
+          <h2>1.4 The heap: where objects live</h2>
+          <p>The heap is the big open area of memory where all objects are stored. It has no tidy order. What matters is how long things stay there:</p>
+          <div class="callout callout-model">
+            <div class="callout-title">Rule of the heap</div>
+            <p>An object stays alive as long as at least one label (or container) points to it. When the last pointer goes away, Python frees the object.</p>
+          </div>
+          <p>Python tracks this with a <strong>reference count</strong>: every object carries a tally of how many things point at it. A new label adds one. Removing a label subtracts one. At zero, the object is deleted on the spot.</p>
+          <div class="code-block">
+            <pre><code>import sys
+data = [10, 20, 30]
+alias = data
+print(sys.getrefcount(data))   # 3, not 2: passing it to the function adds one temporary reference
+del alias                      # remove one label
+print(sys.getrefcount(data))   # 2</code></pre>
+          </div>
+          <p>Containers hold pointers too. A list does not contain its items the way a bag contains apples. It holds a row of pointers to objects elsewhere on the heap. The list <code>[10, 20, 30]</code> is one object holding three arrows. This is why a list can hold different types, and why two lists can share an item.</p>
+        </section>
+
+        <section id="ch1-stack" class="section">
+          <h2>1.5 The call stack: the workspace for each function call</h2>
+          <p>A function call is a small errand. When Python starts one, it creates a <strong>frame</strong>: a private workspace that holds that call’s local names and remembers which line it is on. Frames are stacked like plates: a new call goes on top, and the top plate is always the one being worked on. This is the <strong>call stack</strong>, and it works last-in, first-out.</p>
+          <ul>
+            <li>Function A calls function B: B’s frame goes on top of A’s.</li>
+            <li>B finishes (returns): B’s frame is removed and all its local names disappear.</li>
+            <li>Control drops back to A, exactly where it left off.</li>
+          </ul>
+          <div class="callout callout-key">
+            <div class="callout-title">The key sentence of this chapter</div>
+            <p>Names live in frames; objects live on the heap; names point at objects. When a frame disappears, its names disappear, and each object loses one pointer. Objects that lose their last pointer are freed. Objects someone else still points at survive.</p>
+          </div>
+          <h3>Reading a traceback is reading the stack</h3>
+          <p>When Python crashes, it prints the call stack for you. Read it from the bottom up: the last line is the error, the line above it is where it happened, and the lines above that show how you got there.</p>
+          <div class="code-block traceback">
+            <pre><code>Traceback (most recent call last):
+  File "app.py", line 12, in &lt;module&gt;        # bottom frame: the file itself
+    build_report(data)
+  File "app.py", line 8, in build_report      # called by the frame above
+    total = compute_total(rows)
+  File "app.py", line 3, in compute_total     # top frame: where it crashed
+    return sum(r["amount"] for r in rows)
+KeyError: 'amount'                            # what went wrong</code></pre>
+          </div>
+        </section>
+
+        <!-- INTERACTIVE TRACE CHAPTER 1 -->
+        <section id="ch1-trace" class="section">
+          <h2>1.6 Watch it happen</h2>
+          <p>Below is a small program. Step through it. The left side shows the code line being run. The middle column is the call stack (newest frame on top). The right column is the heap. Each object has a color; a name in a frame is shown with the same color as the object it points to.</p>
+
+          <div class="tracer" id="tracer-ch1">
+            <div class="tracer-tabs">
+              <button class="tracer-tab active" data-scenario="make-scores">make_scores</button>
+            </div>
+            <div class="tracer-body">
+              <div class="tracer-code">
+                <div class="tracer-code-title">Code</div>
+                <pre id="ch1-code" class="code-lines"></pre>
+              </div>
+              <div class="tracer-stack">
+                <div class="tracer-code-title">Call stack <span class="hint">(top = newest)</span></div>
+                <div id="ch1-stack" class="stack-frames"></div>
+              </div>
+              <div class="tracer-heap">
+                <div class="tracer-code-title">Heap</div>
+                <div id="ch1-heap" class="heap-objects"></div>
+              </div>
+            </div>
+            <div class="tracer-controls">
+              <button class="btn" id="ch1-back">← Back</button>
+              <button class="btn btn-primary" id="ch1-next">Next step →</button>
+              <button class="btn" id="ch1-restart">Restart</button>
+              <span class="step-indicator" id="ch1-step">Step 0 of 0</span>
+            </div>
+            <div class="tracer-narration" id="ch1-narration"></div>
+          </div>
+          <p class="note">Addresses are illustrative. Real ones are long numbers that change every run.</p>
+        </section>
+
+        <section id="ch1-sharing" class="section">
+          <h2>1.7 The big consequence: sharing and mutation</h2>
+          <p>Because assignment copies pointers, not objects, two names can point at one object. If the object can be changed, everyone holding a pointer sees the change.</p>
+          <div class="code-block">
+            <pre><code>def add_bonus(scores):
+    scores.append(100)      # changes the object that scores points at
+
+marks = [90, 85]
+add_bonus(marks)
+print(marks)                # [90, 85, 100]  the caller sees the change</code></pre>
+          </div>
+          <p>When <code>add_bonus(marks)</code> runs, a new frame is created and its name <code>scores</code> is attached to the same list that <code>marks</code> points to. There is one list and two labels in two different frames. Changing the list through either label changes it for both. Nothing was copied.</p>
+          <p>Now compare with re-pointing a label:</p>
+          <div class="code-block">
+            <pre><code>def replace(scores):
+    scores = [1]            # moves the local label to a brand-new list
+
+marks = [90, 85]
+replace(marks)
+print(marks)                # [90, 85]  untouched</code></pre>
+          </div>
+          <p>Here the function did not change the list. It moved its own label onto a different object. The caller’s label never moved. The whole distinction between changing an object (mutation) and moving a label (rebinding) is the subject of Chapter 2.</p>
+        </section>
+
+        <section id="ch1-real" class="section">
+          <h2>1.8 Reading real code with this lens</h2>
+          <p>Here is the kind of code you will meet in production: a small cache that avoids reloading expensive reports.</p>
+          <div class="code-block">
+            <pre><code>class ReportCache:
+    def __init__(self):
+        self._store = {}
+
+    def get(self, key, loader):
+        if key not in self._store:
+            self._store[key] = loader(key)
+        return self._store[key]
+
+cache = ReportCache()</code></pre>
+          </div>
+          <p>You do not need to know what a class is yet. Ask the three questions:</p>
+          <ol>
+            <li><strong>What objects are created?</strong> One ReportCache object, one dictionary inside it, and, on every new key, whatever <code>loader(key)</code> returns.</li>
+            <li><strong>What points at them?</strong> The module-level name <code>cache</code> points at the cache object. The cache object points at the dictionary through <code>_store</code>. The dictionary points at every loaded report.</li>
+            <li><strong>When are they freed?</strong> The report objects are freed when the dictionary stops pointing at them. But nothing here ever removes an entry. And <code>cache</code> lives at module level for the whole program.</li>
+          </ol>
+          <div class="callout callout-warn">
+            <div class="callout-title">Conclusion, without running anything</div>
+            <p>Every report ever loaded stays in memory until the program exits. In a long-running service this is a classic memory leak. That is not syntax knowledge; it is the three questions applied to a dozen lines. Real fixes (a size limit, an expiry, weak references) all follow from the same picture.</p>
+          </div>
+        </section>
+
+        <section id="ch1-check" class="section">
+          <h2>1.10 Check yourself</h2>
+          <p>Try to answer before you open each one.</p>
+          <div class="quiz" id="quiz-ch1">
+            <!-- filled by JS -->
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>1.11 Chapter recap</h2>
+          <ul class="recap">
+            <li>Every piece of data is an object with an identity, a type and a value.</li>
+            <li>A name is a label pointing at an object. Assignment attaches labels; it never copies.</li>
+            <li>Objects live on the heap and survive as long as something points at them.</li>
+            <li>Each function call gets a frame on the call stack; the frame’s names die when the call returns.</li>
+            <li>To understand any code, ask: what is created, who points at it, and when is it released?</li>
+          </ul>
+          <div class="glossary">
+            <h3>Glossary</h3>
+            <dl>
+              <dt>Object</dt><dd>A piece of data in memory with an identity, a type and a value.</dd>
+              <dt>Name (variable)</dt><dd>A label that points at an object.</dd>
+              <dt>Reference</dt><dd>A pointer from a name or container to an object.</dd>
+              <dt>Heap</dt><dd>The region of memory where objects live.</dd>
+              <dt>Call stack</dt><dd>The last-in, first-out pile of frames, one per active function call.</dd>
+              <dt>Frame</dt><dd>The private workspace of one function call: its local names and current position.</dd>
+              <dt>Reference count</dt><dd>How many pointers an object currently has. At zero it is freed.</dd>
+              <dt>Mutation</dt><dd>Changing an object in place, so every holder of a pointer sees the change.</dd>
+              <dt>Rebinding</dt><dd>Moving a name to point at a different object, leaving the old object alone.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- CHAPTER 2 -->
+        <section id="ch2" class="section chapter">
+          <div class="chapter-header">
+            <span class="chapter-num">Chapter 2</span>
+            <h1>Pass-by-assignment, mutable and immutable objects</h1>
+            <p class="chapter-vol">Volume 1 · Python memory and core mechanics</p>
+          </div>
+          <p>Chapter 1 gave you the picture: names are labels, objects live on the heap, frames hold names, and an object lives as long as something points at it. This chapter puts that picture to work on the question that causes more Python confusion than any other:</p>
+          <div class="callout callout-key">
+            <div class="callout-title">The question</div>
+            <p>When I hand something to a function, can the function change my original? Sometimes yes and sometimes no, and it can feel random. It is not random. Two ideas explain every case: how the object is handed over, and whether that kind of object can be edited at all.</p>
+          </div>
+        </section>
+
+        <section id="ch2-pass" class="section">
+          <h2>2.1 How arguments are handed over: pass-by-assignment</h2>
+          <p>Programming languages tend to use one of two conventions:</p>
+          <ul>
+            <li><strong>Pass by value:</strong> the function gets a photocopy. Whatever it does to the copy, your original is safe.</li>
+            <li><strong>Pass by reference:</strong> the function gets your actual variable. It can even repoint your variable to something else.</li>
+          </ul>
+          <p>Python does neither. It does exactly what a plain assignment would do:</p>
+          <div class="callout callout-model">
+            <div class="callout-title">Mental model</div>
+            <p>Calling <code>f(x)</code> is the same as writing <code>parameter = x</code> inside a fresh frame. The parameter is a new label stuck onto the same object your own name points at. No copy is made, and the function cannot move your label.</p>
+          </div>
+          <p>This convention is called <strong>pass-by-assignment</strong> (you will also see “pass by object reference” or “call by sharing”).</p>
+          <p>Inside the function there are only two things you can do with a parameter, and they behave completely differently:</p>
+          <ul>
+            <li><strong>Mutate</strong> the object (edit it in place). Everyone who points at it sees the change, the caller included.</li>
+            <li><strong>Rebind</strong> the name (move the parameter’s label onto another object). That only moves the function’s own label. The caller never notices.</li>
+          </ul>
+        </section>
+
+        <section id="ch2-mutable" class="section">
+          <h2>2.2 Mutable and immutable objects</h2>
+          <p>An object is <strong>immutable</strong> if it can never be edited after it is created. Its value is fixed for life. An object is <strong>mutable</strong> if it can be edited in place: same object, same identity, new contents.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Immutable (cannot be edited)</th>
+                  <th>Mutable (can be edited in place)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>int, float, bool, complex</td><td>list</td></tr>
+                <tr><td>str (text), bytes</td><td>dict</td></tr>
+                <tr><td>tuple, frozenset, range</td><td>set, bytearray</td></tr>
+                <tr><td>None</td><td>Instances of classes you or a library define (by default)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <pre><code>n = 1000
+print(id(n))
+n = n + 1
+print(id(n))          # a DIFFERENT id: 1001 is a new object
+
+items = ["a", "b"]
+print(id(items))
+items.append("c")
+print(id(items))      # the SAME id: one object, edited in place</code></pre>
+          </div>
+        </section>
+
+        <!-- INTERACTIVE TRACE CHAPTER 2 -->
+        <section id="ch2-trace" class="section">
+          <h2>2.3 Watch it happen: five scenarios</h2>
+          <p>Pick a scenario and step through it. Pay attention to the “names pointing here” count on each heap object, and to which object each name in each frame points at.</p>
+
+          <div class="tracer" id="tracer-ch2">
+            <div class="tracer-tabs" id="ch2-tabs">
+              <button class="tracer-tab active" data-scenario="mutate">Mutate a list</button>
+              <button class="tracer-tab" data-scenario="rebind">Rebind a name</button>
+              <button class="tracer-tab" data-scenario="immutable">Immutable number</button>
+              <button class="tracer-tab" data-scenario="default">Default argument trap</button>
+              <button class="tracer-tab" data-scenario="shallow">Shallow copy</button>
+            </div>
+            <div class="tracer-body">
+              <div class="tracer-code">
+                <div class="tracer-code-title">Code</div>
+                <pre id="ch2-code" class="code-lines"></pre>
+              </div>
+              <div class="tracer-stack">
+                <div class="tracer-code-title">Call stack <span class="hint">(top = newest)</span></div>
+                <div id="ch2-stack" class="stack-frames"></div>
+              </div>
+              <div class="tracer-heap">
+                <div class="tracer-code-title">Heap</div>
+                <div id="ch2-heap" class="heap-objects"></div>
+              </div>
+            </div>
+            <div class="tracer-controls">
+              <button class="btn" id="ch2-back">← Back</button>
+              <button class="btn btn-primary" id="ch2-next">Next step →</button>
+              <button class="btn" id="ch2-restart">Restart</button>
+              <span class="step-indicator" id="ch2-step">Step 0 of 0</span>
+            </div>
+            <div class="tracer-narration" id="ch2-narration"></div>
+          </div>
+
+          <h3>The four situations compress into one table</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Object type</th>
+                  <th>What the function does</th>
+                  <th>Does the caller see a change?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Mutable (list, dict, set)</td><td>Edits it in place: append, update, x[i] = v</td><td>Yes. One object, shared.</td></tr>
+                <tr><td>Mutable (list, dict, set)</td><td>Rebinds the parameter: param = something_new</td><td>No. Only the local label moved.</td></tr>
+                <tr><td>Immutable (int, str, tuple)</td><td>Tries to “change” it: n = n + 1, s = s.upper()</td><td>No. A new object is built and only the local label moves.</td></tr>
+                <tr><td>Immutable (int, str, tuple)</td><td>Tries to edit in place</td><td>Impossible; Python raises an error.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-model">
+            <div class="callout-title">The rule</div>
+            <p>The caller sees a change only when the function mutates an object that both sides can reach. Rebinding a name never crosses the frame boundary.</p>
+          </div>
+        </section>
+
+        <section id="ch2-plus" class="section">
+          <h2>2.4 Two kinds of +=</h2>
+          <p>Both snippets below add 3 to a list, and they behave differently:</p>
+          <div class="code-block">
+            <pre><code>a = [1, 2]
+b = a
+a = a + [3]        # builds a NEW list [1, 2, 3], then moves label a onto it
+print(b)           # [1, 2]      b still points at the old list
+
+a = [1, 2]
+b = a
+a += [3]           # asks the list to extend ITSELF, in place
+print(b)           # [1, 2, 3]   same object, so b sees it</code></pre>
+          </div>
+          <p>The rule: <code>a += x</code> first offers the object a chance to update itself in place. Lists accept, so the same list is edited. Numbers and text cannot be edited, so Python falls back to <code>a = a + x</code>: a new object, and the label moves.</p>
+        </section>
+
+        <section id="ch2-copy" class="section">
+          <h2>2.6 Copying: alias, shallow copy, deep copy</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Operation</th>
+                  <th>What is created</th>
+                  <th>Inner objects</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>b = a</code> (alias)</td><td>Nothing. A second label.</td><td>All shared</td></tr>
+                <tr><td><code>a.copy()</code>, <code>list(a)</code>, <code>a[:]</code> (shallow)</td><td>A new outer container</td><td>Shared with the original</td></tr>
+                <tr><td><code>copy.deepcopy(a)</code> (deep)</td><td>A new outer + new copies of everything inside</td><td>Not shared</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-warn">
+            <div class="callout-title">Classic trap: the shared row</div>
+            <pre><code>grid = [[0] * 3] * 3          # WRONG
+grid[0][0] = 1
+print(grid)                   # [[1, 0, 0], [1, 0, 0], [1, 0, 0]]  all rows changed!
+
+grid = [[0] * 3 for _ in range(3)]   # RIGHT</code></pre>
+            <p><code>[row] * 3</code> repeats the pointer, not the row: one row object, three arrows pointing at it.</p>
+          </div>
+        </section>
+
+        <section id="ch2-default" class="section">
+          <h2>2.7 The default-argument trap</h2>
+          <p>This is the single most-quoted Python gotcha, and the mental model explains it completely.</p>
+          <div class="code-block">
+            <pre><code>def add(item, bucket=[]):
+    bucket.append(item)
+    return bucket
+
+a = add(1)
+b = add(2)
+print(a)        # [1, 2]   surprise: we never put 2 in a's list
+print(b)        # [1, 2]
+print(a is b)   # True     it is one list</code></pre>
+          </div>
+          <p>The key fact: the <code>def</code> line runs once, when the function is defined, and default values are created at that moment. Python builds the empty list one time and stores it on the function object. Every later call that omits <code>bucket</code> attaches the parameter to that same stored list.</p>
+          <div class="callout callout-model">
+            <div class="callout-title">The fix</div>
+            <pre><code>def add(item, bucket=None):
+    if bucket is None:
+        bucket = []          # created on EVERY call, inside the frame
+    bucket.append(item)
+    return bucket</code></pre>
+            <p>None is the right placeholder because it is immutable and cannot be confused with real data. Reading rule: whenever you see <code>=[]</code>, <code>={}</code> or <code>=set()</code> in a function signature, stop.</p>
+          </div>
+        </section>
+
+        <section id="ch2-real" class="section">
+          <h2>2.9 Reading real code: the config that remembers</h2>
+          <p>Here is a bug shape that appears in real services. Do not run it. Read it with the three questions from Chapter 1, plus the sharing rule from this chapter:</p>
+          <div class="code-block">
+            <pre><code>DEFAULTS = {"retries": 3, "timeout": 30}
+
+def make_config(overrides):
+    cfg = DEFAULTS
+    cfg.update(overrides)
+    return cfg
+
+a = make_config({"timeout": 5})
+b = make_config({})
+print(b["timeout"])</code></pre>
+          </div>
+          <ol>
+            <li><strong>What objects exist?</strong> One dictionary, <code>DEFAULTS</code>, created at module level. The function creates no dictionary of its own.</li>
+            <li><strong>Who points at it?</strong> <code>DEFAULTS</code> (module level), and inside each call <code>cfg</code>, which is attached with a plain assignment. That is a second label, not a copy.</li>
+            <li><strong>What does the body do to it?</strong> <code>cfg.update(overrides)</code> is on the mutation radar. It edits the one shared dictionary.</li>
+            <li><strong>How long does it live?</strong> The whole program, because <code>DEFAULTS</code> is module-level.</li>
+          </ol>
+          <div class="callout callout-warn">
+            <div class="callout-title">Conclusion</div>
+            <p>The first call permanently rewrites the defaults. <code>b["timeout"]</code> prints 5, not 30, and <code>a</code> and <code>b</code> are even the same object. In a real service this shows up as “settings leak between requests”. The fix:</p>
+            <pre><code>def make_config(overrides):
+    return {**DEFAULTS, **overrides}      # builds a new dict: DEFAULTS is untouched</code></pre>
+          </div>
+        </section>
+
+        <section id="ch2-check" class="section">
+          <h2>2.13 Check yourself</h2>
+          <p>Predict each answer before opening it.</p>
+          <div class="quiz" id="quiz-ch2">
+            <!-- filled by JS -->
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>2.14 Chapter recap</h2>
+          <ul class="recap">
+            <li>Calling a function assigns each parameter to the argument’s object. Nothing is copied.</li>
+            <li>The function can mutate a shared object (visible to the caller) or rebind its own label (never visible to the caller).</li>
+            <li>Immutable objects cannot be edited, so any “change” is a new object plus a moved label.</li>
+            <li>Immutability is shallow: a tuple’s pointers are fixed, but what they point at might not be.</li>
+            <li>Default values are created once at <code>def</code> time. Use <code>None</code> for “no value”, never <code>[]</code>.</li>
+          </ul>
+          <div class="next-chapter">
+            <h3>Next: Chapter 3</h3>
+            <p>Variable scopes (LEGB) and execution frames. Where Python looks when you use a name, why a function can read outside names but not easily rebind them, and how the frames from Chapters 1 and 2 are organized into layers.</p>
+          </div>
+        </section>
+
+        <footer class="site-footer">
+          <p>The AI Builder’s Handbook · Built for people who want to read production-grade code with confidence.</p>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <script src="js/tracer.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

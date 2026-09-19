@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "The AI Builder's Handbook",
+      "hasCanvas": false,
+      "bodyTextLen": 6483,
+      "bodyTextHash": "a0215d02ec328a1c2e94d9e2440d86c65f025b37a09f065c37e40af4efb7ff09",
+      "bodyTextPrefix": "AI Builder Handbook · Vol 1 How this book works The three questi",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "The AI Builder's Handbook",
+      "hasCanvas": false,
+      "bodyTextLen": 6217,
+      "bodyTextHash": "f6516fab58a777713dedfbf5d764ea82ba168b31a034c6f9573cf6f21e6ff2c7",
+      "bodyTextPrefix": "VOLUME 1 · PYTHON MEMORY The AI Builder's Handbook Learn Python ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": false,
+  "baselineReasons": []
+}

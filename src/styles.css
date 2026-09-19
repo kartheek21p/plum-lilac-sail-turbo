@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Newsreader", "Iowan Old Style", "Palatino Linotype", serif;
+  --font-sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  --color-bg: #efece6;
+  --color-surface: #f7f5f0;
+  --color-raised: #ffffff;
+  --color-fg: #1c1917;
+  --color-muted: #57534e;
+  --color-subtle: #78716c;
+  --color-border: #d6d3cd;
+  --color-accent: #1c1917;
+  --color-accent-fg: #f7f5f0;
+  --color-code: #262421;
+  --color-code-fg: #f5f2eb;
+  --color-warn: #9a6b3a;
+
+  --color-obj-fn: #57534e;
+  --color-obj-list: #3d6a8a;
+  --color-obj-num: #3d6b4f;
+  --color-obj-alt: #9a6b3a;
+  --color-obj-copy: #4a6356;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+  }
+}
+
+:root {
+  --obj-fn: var(--color-obj-fn);
+  --obj-list: var(--color-obj-list);
+  --obj-num: var(--color-obj-num);
+  --obj-alt: var(--color-obj-alt);
+  --obj-copy: var(--color-obj-copy);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
